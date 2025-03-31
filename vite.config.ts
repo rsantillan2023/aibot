@@ -71,19 +71,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist', // 👈 esto le dice a Vite dónde poner los archivos construidos
-    lib: {
-      entry: path.resolve(__dirname, 'src/components/ChatWidget.vue'),
-      name: 'ChatWidget',
-      fileName: (format) => `chat-widget.${format}.js`
-    },
-    rollupOptions: {
-      external: ['vue'],
-      output: {
-        globals: {
-          vue: 'Vue'
-        }
-      }
-    }
+     
   },
   resolve: {
     alias: {
