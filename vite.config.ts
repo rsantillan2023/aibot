@@ -5,7 +5,6 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   base: '/', // 👈 NECESARIO PARA QUE FUNCIONE EN RENDER
-   root: '.', // fuerza a Vite a considerar la raíz del repo
   plugins: [
     vue(),
     VitePWA({
@@ -71,6 +70,7 @@ export default defineConfig({
     postcss: './postcss.config.js'
   },
   build: {
+    outDir: 'dist', // 👈 esto le dice a Vite dónde poner los archivos construidos
     lib: {
       entry: path.resolve(__dirname, 'src/components/ChatWidget.vue'),
       name: 'ChatWidget',
