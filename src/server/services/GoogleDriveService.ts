@@ -110,7 +110,7 @@ export class GoogleDriveService {
         keyfilePath: path.join(process.cwd(), 'credentials.json'),
         scopes: this.SCOPES
       });
-      google.options({ auth });
+            google.options({ auth: client });
       return auth;
     } else {
       // ✅ En producción: usar variables de entorno para auth
@@ -122,7 +122,8 @@ export class GoogleDriveService {
         scopes: this.SCOPES
       });
       const client = await auth.getClient();
-      google.options({ auth: client });
+      
+      google.options({ auth: client as any });
       return client;
     }
   } catch (error) {
