@@ -4,6 +4,7 @@ import path from 'path'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  base: '/', // 👈 NECESARIO PARA QUE FUNCIONE EN RENDER
   plugins: [
     vue(),
     VitePWA({
