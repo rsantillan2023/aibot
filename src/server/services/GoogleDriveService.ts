@@ -1,5 +1,5 @@
 import { google } from 'googleapis'
-import { authenticate } from '@google-cloud/local-auth'
+
 import path from 'path'
 import * as XLSX from 'xlsx'
 
@@ -102,20 +102,34 @@ export class GoogleDriveService {
   ]
 
   static async authenticate() {
-    try {
+  try {
+    if (process.env.NODE_ENV !== 'production') {
+      // ⚠️ Solo usar authenticate() localmente
+      const { authenticate } = await import('@google-cloud/local-auth');
       const auth = await authenticate({
         keyfilePath: path.join(process.cwd(), 'credentials.json'),
         scopes: this.SCOPES
-      })
-
-      google.options({ auth })
-      return auth
-    } catch (error) {
-      console.error('❌ Error en la autenticación de Google Drive:', error)
-      throw error
+      });
+      google.options({ auth });
+      return auth;
+    } else {
+      // ✅ En producción: usar variables de entorno para auth
+      const auth = new google.auth.GoogleAuth({
+        credentials: {
+          client_email: process.env.GOOGLE_CLIENT_EMAIL,
+          private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+        },
+        scopes: this.SCOPES
+      });
+      const client = await auth.getClient();
+      google.options({ auth: client });
+      return client;
     }
+  } catch (error) {
+    console.error('❌ Error en la autenticación de Google Drive:', error);
+    throw error;
   }
-
+}
   static async downloadFile(fileId: string, mimeType: string, fileName: string): Promise<string> {
     try {
       console.log(`   🔄 Obteniendo archivo de Google Drive: ${fileId} (${mimeType})`)
