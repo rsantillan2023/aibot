@@ -5,6 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   base: '/', // 👈 NECESARIO PARA QUE FUNCIONE EN RENDER
+   root: '.', // fuerza a Vite a considerar la raíz del repo
   plugins: [
     vue(),
     VitePWA({
