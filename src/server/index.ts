@@ -545,12 +545,10 @@ async function startServer() {
     const assistant = AssistantService.getInstance()
     await assistant.initializeAssistant()
     
-    //const PORT = process.env.PORT || 3001
-    const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
-    //const server = app.listen(PORT, () => {
-    const server = app.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 Servidor corriendo en puerto ${PORT}`)
-    })
+const port = parseInt(process.env.PORT || '3001', 10);
+app.listen(port, () => {
+  console.log(`🚀 Servidor escuchando en http://0.0.0.0:${port}`);
+});
   } catch (error) {
     console.error('❌ Error al iniciar el servidor:', error)
   }
