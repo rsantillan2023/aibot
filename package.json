@@ -43,7 +43,7 @@
     "dev": "concurrently \"npm run dev:front\" \"npm run dev:back\"",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
-    "build:back": "tsc --outDir dist",
+    "build:back": "tsc --project tsconfig.json",
 "start:back": "node dist/server/index.js"
   },
   "name": "aibot",
