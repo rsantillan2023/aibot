@@ -20,9 +20,7 @@ app.use(express.json())
 // Configuración de multer para el manejo de archivos
 const PORT = process.env.PORT || 3000; 
 
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en el puerto ${PORT}`);
-});
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadDir = './uploads'
