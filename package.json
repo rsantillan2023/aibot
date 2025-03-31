@@ -35,7 +35,8 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2",
     "vite": "^6.2.2",
-    "vite-plugin-pwa": "^0.21.2"
+    "vite-plugin-pwa": "^0.21.2",
+    "vue-tsc": "^2.2.8"
   },
   "scripts": {
     "dev:front": "vite",
