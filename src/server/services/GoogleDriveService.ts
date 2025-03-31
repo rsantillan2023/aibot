@@ -101,7 +101,8 @@ export class GoogleDriveService {
     'https://www.googleapis.com/auth/spreadsheets.readonly'
   ]
 
-  static async authenticate() {
+
+static async authenticate() {
   try {
     if (process.env.NODE_ENV !== 'production') {
       // ⚠️ Solo usar authenticate() localmente
@@ -110,7 +111,7 @@ export class GoogleDriveService {
         keyfilePath: path.join(process.cwd(), 'credentials.json'),
         scopes: this.SCOPES
       });
-            google.options({ auth: client });
+      google.options({ auth: auth as any });
       return auth;
     } else {
       // ✅ En producción: usar variables de entorno para auth
@@ -121,8 +122,9 @@ export class GoogleDriveService {
         },
         scopes: this.SCOPES
       });
+
+      // 👇 Esta línea tenía el error
       const client = await auth.getClient();
-      
       google.options({ auth: client as any });
       return client;
     }
@@ -131,6 +133,7 @@ export class GoogleDriveService {
     throw error;
   }
 }
+  
   static async downloadFile(fileId: string, mimeType: string, fileName: string): Promise<string> {
     try {
       console.log(`   🔄 Obteniendo archivo de Google Drive: ${fileId} (${mimeType})`)
