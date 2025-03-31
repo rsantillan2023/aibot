@@ -18,7 +18,7 @@ app.use(cors())
 app.use(express.json())
 
 // Configuración de multer para el manejo de archivos
-const PORT = process.env.PORT || 3000; 
+const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 
 
 const storage = multer.diskStorage({
