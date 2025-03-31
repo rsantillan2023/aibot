@@ -45,7 +45,7 @@
     "dev:front": "vite",
     "dev:back": "nodemon",
     "dev": "concurrently \"npm run dev:front\" \"npm run dev:back\"",
-    "build": "npm install && vue-tsc && vite build",
+     "build": "vite build",
     "preview": "vite preview",
     "build:back": "tsc --project tsconfig.json",
 "start:back": "node dist/server/index.js"
