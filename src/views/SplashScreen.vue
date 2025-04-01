@@ -22,7 +22,7 @@ const router = useRouter()
 onMounted(() => {
   setTimeout(() => {
     router.push('/chat')
-  }, 2000) // 2 segundos de splash
+  }, 4000) // 4 segundos de splash
 })
 </script>
 
