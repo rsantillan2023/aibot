@@ -128,35 +128,39 @@ try {
 // Cargar el contexto al iniciar el servidor
 async function loadContext() {
   try {
-    const docsDir = path.resolve(process.env.PDF_PATHS || './docs')
-    const contextPath = path.resolve(process.env.CONTEXT_FILE || './docs/context.txt')
-    const driveUrls = process.env.DRIVE_URLS?.split(',') || []
-    
-    console.log('Iniciando carga de contexto...')
-    let allJsons: Record<string, string> = {}
+    console.log('🚀 [loadContext] Iniciando...');
+
+    const docsDir = path.resolve(process.env.PDF_PATHS || './docs');
+    const contextPath = path.resolve(process.env.CONTEXT_FILE || './docs/context.txt');
+    const driveUrls = process.env.DRIVE_URLS?.split(',') || [];
+
+    let allJsons: Record<string, string> = {};
 
     // 1. Cargar archivo de contexto
     try {
-      const contextContent = fs.readFileSync(contextPath, 'utf-8')
+      console.log('📁 [1/3] Leyendo archivo de contexto:', contextPath);
+      const contextContent = fs.readFileSync(contextPath, 'utf-8');
       allJsons['context.txt'] = JSON.stringify({
         type: 'text',
         content: contextContent
-      })
-      console.log('✅ Archivo de contexto cargado')
+      });
+      console.log('✅ [1/3] Archivo de contexto cargado');
     } catch (error) {
-      console.error('❌ Error cargando archivo de contexto:', error)
+      console.error('❌ [1/3] Error cargando archivo de contexto:', error);
     }
 
     // 2. Cargar PDFs del directorio
     if (fs.existsSync(docsDir)) {
-      const files = fs.readdirSync(docsDir)
+      const files = fs.readdirSync(docsDir);
+      console.log(`📂 [2/3] Archivos encontrados en ${docsDir}:`, files);
+
       for (const file of files) {
         if (file.endsWith('.pdf')) {
           try {
-            console.log(`📄 Procesando PDF: ${file}`)
-            const pdfBuffer = fs.readFileSync(path.join(docsDir, file))
-            const pdfData = await pdfParse(pdfBuffer)
-            
+            console.log(`📄 Procesando PDF: ${file}`);
+            const pdfBuffer = fs.readFileSync(path.join(docsDir, file));
+            const pdfData = await pdfParse(pdfBuffer);
+
             allJsons[file] = JSON.stringify({
               type: 'text',
               content: pdfData.text,
@@ -164,78 +168,81 @@ async function loadContext() {
                 pages: pdfData.numpages,
                 metadata: pdfData.metadata
               }
-            })
-            console.log(`✅ PDF procesado: ${file} (${pdfData.numpages} páginas)`)
+            });
+
+            console.log(`✅ PDF procesado: ${file} (${pdfData.numpages} páginas)`);
           } catch (error) {
-            console.error(`❌ Error procesando PDF ${file}:`, error)
+            console.error(`❌ Error procesando PDF ${file}:`, error);
           }
         }
       }
+    } else {
+      console.log(`⚠️ [2/3] Directorio ${docsDir} no existe, se omite carga de PDFs`);
     }
 
-    // 3. Luego procesamos archivos de Google Drive
+    // 3. Archivos de Google Drive
     if (driveUrls.length > 0) {
       try {
-        await GoogleDriveService.authenticate()
-        
-        for (const url of driveUrls) {
-          const folderId = url.split('/').pop()
-          if (!folderId) continue
+        console.log('🌐 [3/3] Autenticando con Google Drive...');
+        await GoogleDriveService.authenticate();
 
-          const driveFiles = await GoogleDriveService.downloadFolder(folderId)
-          
+        for (const url of driveUrls) {
+          const folderId = url.split('/').pop();
+          if (!folderId) continue;
+
+          console.log(`📥 Descargando archivos de carpeta: ${folderId}`);
+          const driveFiles = await GoogleDriveService.downloadFolder(folderId);
+
           for (const file of driveFiles) {
-            console.log(`\n🔍 Procesando archivo de Drive: ${file.name}`)
+            console.log(`🔍 Procesando archivo de Drive: ${file.name}`);
             try {
-              // El contenido ya viene como JSON string desde GoogleDriveService
-              console.log('\n📋 JSON recibido:')
-             // console.log(file.content)
-              
-              // Lo guardamos directamente
-              allJsons[file.name] = file.content
-              
-              console.log(`✅ Archivo ${file.name} procesado correctamente`)
+              allJsons[file.name] = file.content;
+              console.log(`✅ Archivo de Drive procesado: ${file.name}`);
             } catch (error) {
-              console.error(`❌ Error procesando ${file.name}:`, error)
+              console.error(`❌ Error procesando archivo de Drive ${file.name}:`, error);
             }
           }
         }
       } catch (error) {
-        console.error('❌ Error procesando archivos de Google Drive:', error)
+        console.error('❌ [3/3] Error procesando archivos de Google Drive:', error);
       }
+    } else {
+      console.log('📭 [3/3] No se encontraron URLs de Drive en las variables de entorno');
     }
-    
-    globalJsons = allJsons
-    
-    // Guardar log de auditoría
-    await DocumentProcessor.saveAuditLog(globalJsons)
-    
-    console.log('\n📚 CONTENIDO DE GLOBALJSONS')
-    console.log('============================')
+
+    globalJsons = allJsons;
+
+    console.log('💾 Guardando log de auditoría...');
+    await DocumentProcessor.saveAuditLog(globalJsons);
+    console.log('✅ Log de auditoría guardado');
+
+    console.log('\n📚 CONTENIDO DE GLOBALJSONS');
+    console.log('============================');
     Object.entries(globalJsons).forEach(([key, value]) => {
       try {
-        const parsed = JSON.parse(value)
-        console.log(`\n📑 Archivo: ${key}`)
-        console.log(`📝 Tipo: ${parsed.type}`)
+        const parsed = JSON.parse(value);
+        console.log(`\n📑 Archivo: ${key}`);
+        console.log(`📝 Tipo: ${parsed.type}`);
         if (parsed.type === 'text') {
-          console.log(`📄 Primeros 150 caracteres: ${parsed.content.substring(0, 150)}...`)
+          console.log(`📄 Primeros 150 caracteres: ${parsed.content.substring(0, 150)}...`);
           if (parsed.info) {
-            console.log(`ℹ️ Info adicional:`, parsed.info)
+            console.log(`ℹ️ Info adicional:`, parsed.info);
           }
         } else if (parsed.hojas) {
-          console.log(`📊 Hojas encontradas: ${parsed.hojas.length}`)
+          console.log(`📊 Hojas encontradas: ${parsed.hojas.length}`);
           parsed.hojas.forEach((hoja: any) => {
-            console.log(`   - ${hoja.nombreHoja}: ${hoja.filas.length} filas`)
-          })
+            console.log(`   - ${hoja.nombreHoja}: ${hoja.filas.length} filas`);
+          });
         }
       } catch (error) {
-        console.log(`❌ Error al procesar ${key}:`, error)
+        console.log(`❌ Error al procesar ${key}:`, error);
       }
-    })
-    console.log('\n============================')
+    });
+    console.log('============================\n');
 
+    console.log('✅ [loadContext] Finalizado con éxito');
   } catch (error) {
-    console.error('❌ Error al cargar el contexto:', error)
+    console.error('❌ [loadContext] Error general:', error);
   }
 }
 
@@ -548,7 +555,7 @@ async function startServer() {
     // Inicializar el asistente
     console.log('Intentando inicializar el asistente...');
     const assistant = AssistantService.getInstance();
-   // await assistant.initializeAssistant();
+    await assistant.initializeAssistant();
     console.log('Asistente inicializado correctamente.');
 
       console.log('Intentando iniciar el servidor...');
