@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex flex-col bg-white">
+  <div class="flex flex-col bg-white min-h-0 h-full">  
     <!-- Header -->
     <div class="p-4 bg-gray-100 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -14,7 +14,7 @@
     </div>
 
     <!-- Chat Container -->
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col overflow-hidden">  
       <!-- Preguntas Sugeridas -->
       <div class="px-4 py-2 border-b flex flex-wrap gap-1.5">
         <button
@@ -30,7 +30,7 @@
       </div>
 
       <!-- Mensajes -->
-      <div class="flex-1 overflow-y-auto p-4 space-y-4" ref="messagesContainer">
+      <div class="flex-1 overflow-y-auto p-4 space-y-4" ref="messagesContainer">  
         <div 
           v-for="message in messages" 
           :key="message.timestamp"
@@ -156,6 +156,10 @@ watch(messages, () => {
   scrollToBottom()
 }, { deep: true })
 
+  watch(inputMessage, () => {
+  scrollToBottom(false) // sin smooth para evitar lag
+})
+  
 // Manejar envío de mensajes
 const handleSend = async () => {
   if (!inputMessage.value.trim()) return
