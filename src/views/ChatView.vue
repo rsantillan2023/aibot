@@ -114,6 +114,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch, nextTick } from 'vue'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 
@@ -176,7 +177,8 @@ const handleSend = async () => {
   })
 
   try {
-    const response = await fetch('http://localhost:3001/api/chat', {
+    //const response = await fetch('http://localhost:3001/api/chat', {
+      const response = await fetch(`${API_URL}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
