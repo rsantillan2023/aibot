@@ -544,11 +544,13 @@ async function startServer() {
     // Inicializar el asistente
     const assistant = AssistantService.getInstance()
     await assistant.initializeAssistant()
-    
+
+      console.log('Intentando iniciar el servidor...');
 const port = parseInt(process.env.PORT || '3001', 10);
 app.listen(port, () => {
   console.log(`🚀 Servidor escuchando en http://0.0.0.0:${port}`);
 });
+      console.log('Servidor iniciado (o eso parece)...');
   } catch (error) {
     console.error('❌ Error al iniciar el servidor:', error)
   }
