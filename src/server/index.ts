@@ -539,11 +539,17 @@ app.post('/api/upload', upload.single('file'), async (req: Request, res: Respons
 
 async function startServer() {
   try {
-    await loadContext()
+     
+    
+    console.log('Intentando cargar el contexto...');
+    await loadContext();
+    console.log('Contexto cargado correctamente.');
     
     // Inicializar el asistente
-    const assistant = AssistantService.getInstance()
-    await assistant.initializeAssistant()
+    console.log('Intentando inicializar el asistente...');
+    const assistant = AssistantService.getInstance();
+    await assistant.initializeAssistant();
+    console.log('Asistente inicializado correctamente.');
 
       console.log('Intentando iniciar el servidor...');
 const port = parseInt(process.env.PORT || '3001', 10);
