@@ -115,6 +115,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, nextTick } from 'vue'
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_URL = 'https://aibot11-kp7q.onrender.com'
 import DOMPurify from 'dompurify'
 import { marked } from 'marked'
 
