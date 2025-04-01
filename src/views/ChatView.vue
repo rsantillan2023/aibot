@@ -177,7 +177,7 @@ const handleSend = async () => {
 
   messages.value.push({
     type: 'bot',
-    content: 'Analizando su consulta...',
+    content: 'Analizando su consulta. Puede tardar unos minutos...',
     timestamp: Date.now()
   })
 
