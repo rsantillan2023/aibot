@@ -181,6 +181,34 @@ async function loadContext() {
     }
 
     // 3. Archivos de Google Drive
+      if (driveUrls.length > 0) {
+      try {
+        console.log('🌐 [3/3] Autenticando con Google Drive...');
+        await GoogleDriveService.authenticate();
+
+        for (const url of driveUrls) {
+          const folderId = url.split('/').pop();
+          if (!folderId) continue;
+
+          console.log(`📥 Descargando archivos de carpeta: ${folderId}`);
+          const driveFiles = await GoogleDriveService.downloadFolder(folderId);
+
+          for (const file of driveFiles) {
+            console.log(`🔍 Procesando archivo de Drive: ${file.name}`);
+            try {
+              allJsons[file.name] = file.content;
+              console.log(`✅ Archivo de Drive procesado: ${file.name}`);
+            } catch (error) {
+              console.error(`❌ Error procesando archivo de Drive ${file.name}:`, error);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('❌ [3/3] Error procesando archivos de Google Drive:', error);
+      }
+    } else {
+      console.log('📭 [3/3] No se encontraron URLs de Drive en las variables de entorno');
+    }
     
 
     globalJsons = allJsons;
