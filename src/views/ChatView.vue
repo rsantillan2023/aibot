@@ -213,7 +213,8 @@ const handleSuggestedQuestion = (question: string) => {
 // Cargar preguntas sugeridas
 onMounted(async () => {
   try {
-    const response = await fetch('http://localhost:3001/api/suggested-questions')
+    //const response = await fetch('http://localhost:3001/api/suggested-questions')
+    const response = await fetch(`${API_URL}/api/suggested-questions`)
     const data = await response.json()
     suggestedQuestions.value = data.questions
   } catch (error) {
