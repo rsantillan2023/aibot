@@ -548,7 +548,7 @@ async function startServer() {
     // Inicializar el asistente
     console.log('Intentando inicializar el asistente...');
     const assistant = AssistantService.getInstance();
-    await assistant.initializeAssistant();
+   // await assistant.initializeAssistant();
     console.log('Asistente inicializado correctamente.');
 
       console.log('Intentando iniciar el servidor...');
