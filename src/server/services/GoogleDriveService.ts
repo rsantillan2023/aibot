@@ -101,38 +101,40 @@ export class GoogleDriveService {
     'https://www.googleapis.com/auth/spreadsheets.readonly'
   ]
 
-
 static async authenticate() {
   try {
-    if (process.env.NODE_ENV !== 'production') {
-      // ⚠️ Solo usar authenticate() localmente
-      const { authenticate } = await import('@google-cloud/local-auth');
-      const auth = await authenticate({
-        keyfilePath: path.join(process.cwd(), 'credentials.json'),
-        scopes: this.SCOPES
-      });
-      google.options({ auth: auth as any });
-      return auth;
-    } else {
-      // ✅ En producción: usar variables de entorno para auth
-      const auth = new google.auth.GoogleAuth({
-        credentials: {
-          client_email: process.env.GOOGLE_CLIENT_EMAIL,
-          private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-        },
-        scopes: this.SCOPES
-      });
+    let credentials
 
-      // 👇 Esta línea tenía el error
-      const client = await auth.getClient();
-      google.options({ auth: client as any });
-      return client;
+    if (process.env.GOOGLE_SERVICE_ACCOUNT) {
+      // ✅ PRODUCCIÓN - desde variable codificada en base64
+      credentials = JSON.parse(
+        Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT, 'base64').toString('utf-8')
+      )
+      console.log('🔐 Autenticando con GOOGLE_SERVICE_ACCOUNT desde variable codificada')
+    } else {
+      // 🧪 DESARROLLO - usar archivo local
+      console.log('🔐 Autenticando con archivo credentials.json')
+      credentials = JSON.parse(
+        fs.readFileSync(path.join(process.cwd(), 'credentials.json'), 'utf-8')
+      )
     }
+
+    const auth = new google.auth.GoogleAuth({
+      credentials,
+      scopes: this.SCOPES
+    })
+
+    const client = await auth.getClient()
+    google.options({ auth: client as any })
+    console.log('✅ Autenticación con Google Drive completada')
+    return client
+
   } catch (error) {
-    console.error('❌ Error en la autenticación de Google Drive:', error);
-    throw error;
+    console.error('❌ Error en la autenticación de Google Drive:', error)
+    throw error
   }
 }
+
   
   static async downloadFile(fileId: string, mimeType: string, fileName: string): Promise<string> {
     try {
