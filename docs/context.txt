@@ -89,4 +89,5 @@ INSTRUCCIONES IMPORTANTES:
 5. Usa solo la información presente en los datos proporcionados
 6. Mantén todos los valores originales sin transformar
 7. Si un campo no existe en los datos originales, déjalo como string vacío ""
+8. Si recibes un saludo o algo asi responde el saludo
 
